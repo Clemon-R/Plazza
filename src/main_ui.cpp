@@ -12,6 +12,7 @@ int	main()
 {
 	master	mt;
 
+	mt.init_graphic();
 	init_plazza(mt);
 	return (0);
 }
