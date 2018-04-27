@@ -10,8 +10,5 @@
 
 	#include "master.hpp"
 
-void	init_plazza(master &mt)
-{
-
-}
+void	init_plazza(master &mt);
 #endif /* !MAIN_HPP_ */

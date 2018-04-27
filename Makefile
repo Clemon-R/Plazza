@@ -5,9 +5,11 @@
 ## Makefile
 ##
 
-MAIN	=	src/main.cpp
+MAIN	=	src/main.cpp	\
+		src/launcher.cpp
 
-GUI	=	src/main_ui.cpp
+GUI	=	src/main.cpp	\
+		src/launcher_ui.cpp
 	
 SRC	=	$(addprefix src/main/,	\
 			master.cpp	\
@@ -28,6 +30,8 @@ CXX	=	g++
 
 CXXFLAGS	+=	-Iinclude -std=c++14
 
+FLAGSGRAPHIC	=	
+
 NAME	=	plazza
 
 NAME_TESTS	=	unit-tests
@@ -38,7 +42,7 @@ $(NAME):	$(OBJ) $(OBJ_MAIN)
 	$(CXX) $(OBJ) $(OBJ_MAIN) -o $(NAME) $(CXXFLAGS)
 
 ui:	$(OBJ) $(OBJ_GUI)
-	$(CXX) $(OBJ) $(OBJ_GUI) -o $(NAME) $(CXXFLAGS)
+	$(CXX) $(OBJ) $(OBJ_GUI) -o $(NAME) $(CXXFLAGS) $(FLAGSGRAPHIC)
 
 $(NAME_TESTS):	tests_run
 

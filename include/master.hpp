@@ -9,6 +9,7 @@
 	#define MASTER_HPP_
 
 	#include <memory>
+	#include <iostream>
 	#include "graphic/sfml.hpp"
 
 class master
