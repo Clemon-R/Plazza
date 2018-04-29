@@ -15,7 +15,7 @@
 class master
 {
 public:
-	master();
+	master(const int);
 	~master();
 
 	bool	init_graphic();

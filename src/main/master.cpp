@@ -7,7 +7,7 @@
 
 #include "master.hpp"
 
-master::master()
+master::master(const int max_thread)
 {
 	std::cout << "master: running init...\n";
 }

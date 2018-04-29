@@ -10,7 +10,12 @@ MAIN	=	src/main.cpp	\
 
 GUI	=	src/main.cpp	\
 		src/launcher_ui.cpp
-	
+
+SRC_UTILS	=	$(addprefix src/utils/,	\
+			commands/command.cpp	\
+			commands/parser.cpp	\
+			)
+
 SRC	=	$(addprefix src/main/,	\
 			master.cpp	\
 			)
@@ -19,7 +24,8 @@ SRC_TESTS	=	$(addprefix tests/,	\
 			ut_master.cpp	\
 			)
 
-OBJ	=	$(SRC:.cpp=.o)
+OBJ	=	$(SRC:.cpp=.o)	\
+		$(SRC_UTILS:.cpp=.o)
 
 OBJ_MAIN	=	$(MAIN:.cpp=.o)
 
