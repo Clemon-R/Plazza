@@ -16,6 +16,7 @@ SRC	=	$(addprefix src/main/,	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\
+			ut_master.cpp	\
 			)
 
 OBJ	=	$(SRC:.cpp=.o)
