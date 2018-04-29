@@ -2,17 +2,13 @@
 ** EPITECH PROJECT, 2018
 ** plazza
 ** File description:
-** main
+** ut_master
 */
 
-#include "main.hpp"
+#include <criterion/criterion.h>
 #include "master.hpp"
 
-int	main()
+Test(master, init)
 {
 	master	mt;
-
-	mt.init_graphic();
-	init_plazza(mt);
-	return (0);
 }
