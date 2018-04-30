@@ -29,14 +29,16 @@ void	master::set_graphic_mode() noexcept
 	_graphic_mode = true;
 }
 
+void	master::run_dispatch()
+{
+
+}
+
 void	master::run()
 {
-	std::thread	interface([this](){this->run_interface();});
+	std::thread	interface([this](){this->run_dispatch();});
 
 	std::cout << "master: running...\n";
 	interface.join();
-	while (_run){
-
-	}
-
+	this->run_interface();
 }

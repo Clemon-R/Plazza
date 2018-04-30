@@ -22,6 +22,7 @@ public:
 	~master();
 
 	virtual void	run_interface() = 0;
+	void	run_dispatch();
 	void	run();
 	void	set_commands(const std::list<command> &);
 	void	set_graphic_mode() noexcept;
