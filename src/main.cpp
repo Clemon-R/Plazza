@@ -6,7 +6,7 @@
 */
 
 #include "main.hpp"
-#include "master.hpp"
+#include "main/master.hpp"
 #include <cctype>
 #include <memory>
 
@@ -25,11 +25,8 @@ static bool	check_error(int argc, char **argv)
 
 int	main(int argc, char **argv)
 {
-	std::unique_ptr<master>	mt;
-
 	if (check_error(argc, argv))
 		return (84);
-	mt.reset(new master(std::atoi(argv[1])));
-	init_plazza(*mt);
+	init_plazza(std::atoi(argv[1]));
 	return (0);
 }

@@ -6,10 +6,16 @@
 ##
 
 MAIN	=	src/main.cpp	\
+		src/main/master_none.cpp	\
 		src/launcher.cpp
 
+SRC_GRAPHIC	=	$(addprefix src/main/graphic/,	\
+			sfml.cpp)
+
 GUI	=	src/main.cpp	\
-		src/launcher_ui.cpp
+		src/main/master_ui.cpp	\
+		src/launcher_ui.cpp	\
+		$(SRC_GRAPHIC)
 
 SRC_UTILS	=	$(addprefix src/utils/,	\
 			commands/command.cpp	\
@@ -35,9 +41,9 @@ OBJ_TESTS	=	$(SRC_TESTS:.cpp=.o)
 
 CXX	=	g++
 
-CXXFLAGS	+=	-Iinclude -std=c++14
+CXXFLAGS	+=	-Iinclude -std=c++14 -g3
 
-FLAGSGRAPHIC	=	
+FLAGSGRAPHIC	=	-lsfml-window -lsfml-system -lsfml-graphics
 
 NAME	=	plazza
 

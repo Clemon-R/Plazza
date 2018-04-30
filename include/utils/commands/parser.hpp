@@ -9,10 +9,17 @@
 	#define PARSER_HPP_
 
 	#include "utils/commands/command.hpp"
+	#include <list>
+	#include <map>
 
 class commandParser
 {
 public:
-	static command	&parse_line(const std::string &line);
+	static std::list<command>	parse_line(std::string &line);
+	static std::list<command>	parse_file(FILE *);
+private:
+	static Information	get_action(const std::string &);
+
+	static std::map<std::string, Information>	_list;
 };
 #endif /* !PARSER_HPP_ */

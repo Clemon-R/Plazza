@@ -5,11 +5,12 @@
 ** master
 */
 
-#include "master.hpp"
+#include "main/master.hpp"
 
-master::master(const int max_thread)
+master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false)
 {
 	std::cout << "master: running init...\n";
+	std::cout << "master: max thread - " << max_thread << std::endl;
 }
 
 master::~master()
@@ -17,8 +18,18 @@ master::~master()
 	std::cout << "master: closing...\n";
 }
 
-bool	master::init_graphic()
+void	master::set_commands(const std::list<command> &value)
 {
-	std::cout << "master: graphic needed\nmaster: running init...\n";
-	_graphic.reset(nullptr);
+	std::cout << "master: new list of commands\n";
+	_commands = value;
+}
+
+void	master::set_graphic_mode() noexcept
+{
+	_graphic_mode = true;
+}
+
+void	master::run()
+{
+	
 }

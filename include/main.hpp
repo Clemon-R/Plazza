@@ -8,7 +8,7 @@
 #ifndef MAIN_HPP_
 	#define MAIN_HPP_
 
-	#include "master.hpp"
+	#include "main/master.hpp"
 
-void	init_plazza(master &mt);
+void	init_plazza(const int);
 #endif /* !MAIN_HPP_ */
