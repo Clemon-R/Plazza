@@ -41,7 +41,7 @@ OBJ_TESTS	=	$(SRC_TESTS:.cpp=.o)
 
 CXX	=	g++
 
-CXXFLAGS	+=	-Iinclude -std=c++14 -g3
+CXXFLAGS	+=	-Iinclude -lpthread -std=c++14 -g3
 
 FLAGSGRAPHIC	=	-lsfml-window -lsfml-system -lsfml-graphics
 

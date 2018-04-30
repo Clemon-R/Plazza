@@ -7,7 +7,7 @@
 
 #include "main/master.hpp"
 
-master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false)
+master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false), _run(true)
 {
 	std::cout << "master: running init...\n";
 	std::cout << "master: max thread - " << max_thread << std::endl;
@@ -31,5 +31,12 @@ void	master::set_graphic_mode() noexcept
 
 void	master::run()
 {
-	
+	std::thread	interface([this](){this->run_interface();});
+
+	std::cout << "master: running...\n";
+	interface.join();
+	while (_run){
+
+	}
+
 }

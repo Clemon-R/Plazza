@@ -11,6 +11,8 @@
 	#include <memory>
 	#include <iostream>
 	#include <list>
+	#include <thread>
+	#include <mutex>
 	#include "utils/commands/command.hpp"
 
 class master
@@ -27,5 +29,6 @@ protected:
 	const std::size_t	_max_thread;
 	std::list<command>	_commands;
 	bool			_graphic_mode;
+	bool			_run;
 };
 #endif /* !MASTER_HPP_ */

@@ -14,5 +14,5 @@ master_none::master_none(const int max) : master(max)
 
 void	master_none::run_interface()
 {
-	
+	std::cout << "master: run interface without graphic...\n";	
 }

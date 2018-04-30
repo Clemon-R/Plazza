@@ -16,5 +16,5 @@ void	init_plazza(const int max)
 
 	mt->set_commands(list);
 	mt->set_graphic_mode();
-	mt->init_graphic();	
+	mt->run();
 }

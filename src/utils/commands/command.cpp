@@ -13,14 +13,10 @@ command::command() : command("", Information::NONE)
 
 command::command(const std::string &file, const Information info) : _file(file), _info(info)
 {
-	std::cout << "command: new command created.\n";
-	std::cout << "command: on file - " << file << "." << std::endl;
-	std::cout << "command: action - " << info << "." << std::endl;
 }
 
 command::~command()
 {
-	std::cout << "command: destroyed.\n";
 }
 
 command	&command::operator=(const command &copy)

@@ -15,4 +15,5 @@ void	init_plazza(const int max)
 	std::list<command>	list = commandParser::parse_file(stdin);
 
 	mt->set_commands(list);
+	mt->run();
 }
