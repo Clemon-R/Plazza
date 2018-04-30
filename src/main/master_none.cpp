@@ -8,6 +8,7 @@
 #include "main/master.hpp"
 #include "main/master_none.hpp"
 #include "utils/commands/parser.hpp"
+#include <iostream>
 
 master_none::master_none(const int max) : master(max)
 {
@@ -20,9 +21,16 @@ static bool	compare_commands(const command &first, const command &second)
 
 void	master_none::run_interface()
 {
+	std::string	line;
+
 	std::cout << "master: run interface without graphic...\n";
-	while (_run){
+	std::cout << " > ";
+	while (std::getline(std::cin, line)){
+		if (line.empty()){
+			std::cout << "\n";
+			break;
+		}
+		_commands.merge(commandParser::parse_line(line), compare_commands);
 		std::cout << " > ";
-		_commands.merge(commandParser::parse_file(stdin), compare_commands);
 	}
 }

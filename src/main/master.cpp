@@ -31,14 +31,14 @@ void	master::set_graphic_mode() noexcept
 
 void	master::run_dispatch()
 {
-
+	std::cout << "master: dispatching commands...\n";
 }
 
 void	master::run()
 {
-	std::thread	interface([this](){this->run_dispatch();});
+	std::thread	dispatch([this](){this->run_dispatch();});
 
 	std::cout << "master: running...\n";
-	interface.join();
-	this->run_interface();
+	dispatch.join();
+	run_interface();
 }

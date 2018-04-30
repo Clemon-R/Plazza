@@ -11,12 +11,14 @@
 	#include "utils/commands/command.hpp"
 	#include <list>
 	#include <map>
+	#include <istream>
+	#include <iostream>
 
 class commandParser
 {
 public:
 	static std::list<command>	parse_line(std::string &line);
-	static std::list<command>	parse_file(FILE *);
+	static std::list<command>	parse_file(std::istream &);
 private:
 	static Information	get_action(const std::string &);
 

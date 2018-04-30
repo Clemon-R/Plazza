@@ -69,27 +69,22 @@ static bool	compare_commands(const command &first, const command &second)
 	return (true);
 }
 
-std::list<command>	commandParser::parse_file(FILE *fd)
+std::list<command>	commandParser::parse_file(std::istream	&fd)
 {
-	int	len = 0;
-	char	*line = 0;
-	std::size_t	size = 0;
-	std::string	str;
+	std::string	line;
 	std::string	tmp;
 
 	std::list<command>	result;
 	int	pos;
 
-	std::cout << "parser: parse file - " << fd << std::endl;
-	while ((len = getline(&line, &size, fd)) != -1){
-		str = std::string(line);
-		clean_str(str);
-		while ((pos = str.find(";")) != std::string::npos){
-			tmp = str.substr(0, pos);
+	while (std::getline(fd, line)){
+		clean_str(line);
+		while ((pos = line.find(";")) != std::string::npos){
+			tmp = line.substr(0, pos);
 			result.merge(parse_line(tmp), compare_commands);
-			str = str.substr(pos + 1);
+			line = line.substr(pos + 1);
 		}
-		result.merge(parse_line(str), compare_commands);
+		result.merge(parse_line(line), compare_commands);
 	}
 	std::cout << "parser: number of commands - " << result.size() << std::endl;
 	return (result);
