@@ -42,16 +42,25 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 
 void	master::run_dispatch()
 {
+	std::list<command>::iterator	it;
 	std::cout << "master: dispatching commands...\n";
-	create_slave();
-	//while (true);
+
+	do{
+		it = _commands.begin();
+		while (it != _commands.end()){
+			create_slave();
+			it = _commands.erase(it);
+		}
+	} while (_run || _commands.size() > 0);
+	std::cout << "master: end of running\n";
 }
 
 void	master::run()
 {
 	std::thread	interface([this](){this->run_interface();});
+	std::thread	dispatch([this](){this->run_dispatch();});
 
 	std::cout << "master: running...\n";
 	interface.join();
-	run_dispatch();
+	dispatch.join();
 }

@@ -54,12 +54,12 @@ std::list<command>	commandParser::parse_line(std::string &line)
 		else if (count > 0){
 			if (action == Information::NONE)
 				action = get_action(line.substr(i + 1, count));
-			else
+			else if (action < Information::UNKNOW)
 				add_command(result, action, line.substr(i + 1, count));
 			count = 0;
 		}
 	}
-	if (count > 0)
+	if (count > 0 && action < Information::UNKNOW)
 		add_command(result, action, line.substr(i + 1, count));
 	return (result);
 }

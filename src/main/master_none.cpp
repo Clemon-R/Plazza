@@ -24,13 +24,13 @@ void	master_none::run_interface()
 	std::string	line;
 
 	std::cout << "master: run interface without graphic...\n";
-	std::cout << " > ";
 	while (std::getline(std::cin, line)){
 		if (line.empty()){
 			std::cout << "\n";
 			break;
 		}
 		_commands.merge(commandParser::parse_line(line), compare_commands);
-		std::cout << " > ";
 	}
+	std::cout << "master: end of line\n";
+	_run = false;
 }
