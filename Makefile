@@ -20,10 +20,12 @@ GUI	=	src/main.cpp	\
 SRC_UTILS	=	$(addprefix src/utils/,	\
 			commands/command.cpp	\
 			commands/parser.cpp	\
+			utils.cpp	\
 			)
 
 SRC	=	$(addprefix src/main/,	\
 			master.cpp	\
+			slave.cpp	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\

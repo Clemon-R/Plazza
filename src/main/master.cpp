@@ -29,16 +29,29 @@ void	master::set_graphic_mode() noexcept
 	_graphic_mode = true;
 }
 
+std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_slave()
+{
+	std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	result;
+	std::unique_ptr<std::thread>	bg;
+	std::unique_ptr<slave>		sl;
+
+	bg.reset(new std::thread([&sl](){sl.reset(new slave());}));
+	bg->join();
+	return (result);
+}
+
 void	master::run_dispatch()
 {
 	std::cout << "master: dispatching commands...\n";
+	create_slave();
+	//while (true);
 }
 
 void	master::run()
 {
-	std::thread	dispatch([this](){this->run_dispatch();});
+	std::thread	interface([this](){this->run_interface();});
 
 	std::cout << "master: running...\n";
-	dispatch.join();
-	run_interface();
+	interface.join();
+	run_dispatch();
 }
