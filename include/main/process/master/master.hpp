@@ -15,7 +15,7 @@
 	#include <mutex>
 	#include <map>
 	#include "utils/commands/command.hpp"
-	#include "main/slave.hpp"
+	#include "main/process/slave/slave.hpp"
 
 class master
 {

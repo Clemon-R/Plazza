@@ -5,7 +5,7 @@
 ** master
 */
 
-#include "main/master.hpp"
+#include "main/process/master/master.hpp"
 
 master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false), _run(true)
 {
@@ -61,6 +61,6 @@ void	master::run()
 	std::thread	dispatch([this](){this->run_dispatch();});
 
 	std::cout << "master: running...\n";
-	interface.join();
 	dispatch.join();
+	interface.join();
 }

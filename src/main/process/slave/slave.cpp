@@ -5,7 +5,7 @@
 ** slave
 */
 
-#include "main/slave.hpp"
+#include "main/process/slave/slave.hpp"
 #include "utils/utils.hpp"
 #include <unistd.h>
 

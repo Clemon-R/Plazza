@@ -8,8 +8,8 @@
 #ifndef MASTER_UI_HPP_
 	#define MASTER_UI_HPP_
 
-	#include "main/master.hpp"
-	#include "graphic/sfml.hpp"
+	#include "main/process/master/master.hpp"
+	#include "main/graphic/sfml.hpp"
 
 class master_ui : public master
 {

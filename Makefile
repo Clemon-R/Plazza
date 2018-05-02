@@ -6,14 +6,14 @@
 ##
 
 MAIN	=	src/main.cpp	\
-		src/main/master_none.cpp	\
+		src/main/process/master/master_none.cpp	\
 		src/launcher.cpp
 
 SRC_GRAPHIC	=	$(addprefix src/main/graphic/,	\
 			sfml.cpp)
 
 GUI	=	src/main.cpp	\
-		src/main/master_ui.cpp	\
+		src/main/process/master/master_ui.cpp	\
 		src/launcher_ui.cpp	\
 		$(SRC_GRAPHIC)
 
@@ -24,8 +24,8 @@ SRC_UTILS	=	$(addprefix src/utils/,	\
 			)
 
 SRC	=	$(addprefix src/main/,	\
-			master.cpp	\
-			slave.cpp	\
+			process/master/master.cpp	\
+			process/slave/slave.cpp	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\

@@ -5,8 +5,8 @@
 ** master_ui
 */
 
-#include "main/master.hpp"
-#include "main/master_ui.hpp"
+#include "main/process/master/master.hpp"
+#include "main/process/master/master_ui.hpp"
 
 master_ui::master_ui(const int max) : master(max)
 {

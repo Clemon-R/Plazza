@@ -5,8 +5,8 @@
 ** master_none
 */
 
-#include "main/master.hpp"
-#include "main/master_none.hpp"
+#include "main/process/master/master.hpp"
+#include "main/process/master/master_none.hpp"
 #include "utils/commands/parser.hpp"
 #include <iostream>
 
@@ -24,6 +24,7 @@ void	master_none::run_interface()
 	std::string	line;
 
 	std::cout << "master: run interface without graphic...\n";
+	std::cout << "***Enter your commands***\n";
 	while (std::getline(std::cin, line)){
 		if (line.empty()){
 			std::cout << "\n";
