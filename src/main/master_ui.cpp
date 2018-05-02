@@ -10,6 +10,7 @@
 
 master_ui::master_ui(const int max) : master(max)
 {
+	_actual_page = 0;
 }
 
 bool	master_ui::init_graphic()
@@ -21,68 +22,145 @@ bool	master_ui::init_graphic()
 	return (true);
 }
 
-void	master_ui::draw_choice(bool whichOne)
+void	master_ui::my_set_position(sf::Text *text, int gap)
 {
-	if (whichOne){
-		choice[0].setStyle(sf::Text::Underlined);
-		choice[1].setStyle(sf::Text::Regular);
-	}
-	else{
-		choice[0].setStyle(sf::Text::Regular);
-		choice[1].setStyle(sf::Text::Underlined);
-	}
-	_window.draw(choice[0]);
-	_window.draw(choice[1]);
+	sf::FloatRect	rect;
+
+	rect = text->getLocalBounds();
+	text->setOrigin(rect.left + rect.width / 2.0f,
+		rect.top + rect.height / 2.0f);
+	text->setPosition(sf::Vector2f(_window.getSize().x / 2.0f,
+		_window.getSize().y / 2.0f + gap));
 }
 
-void	master_ui::init_choices()
+void	master_ui::init_first_page()
 {
 	sf::FloatRect	rect;
 
 	if (!_font.loadFromFile("fonts/font1.ttf"))
 		exit(84);
-	choice[0].setFont(_font);
-	choice[0].setString("Select file to scrap");
-	choice[0].setCharacterSize(20);
-	rect = choice[0].getLocalBounds();
-	choice[0].setOrigin(rect.left + rect.width / 2.0f,
-		rect.top + rect.height / 2.0f);
-	choice[0].setPosition(sf::Vector2f(_window.getSize().x / 2.0f,
-		_window.getSize().y / 2.0f - 40));
-	choice[1].setFont(_font);
-	choice[1].setString("Enter commands manually");
-	choice[1].setCharacterSize(20);
-	rect = choice[1].getLocalBounds();
-	choice[1].setOrigin(rect.left + rect.width / 2.0f,
-		rect.top + rect.height / 2.0f);
-	choice[1].setPosition(sf::Vector2f(_window.getSize().x / 2.0f,
-		_window.getSize().y / 2.0f));
+	first_page_choices[0].setFont(_font);
+	first_page_choices[0].setString("Select file to scrap");
+	first_page_choices[0].setCharacterSize(20);
+	my_set_position(&first_page_choices[0], -40);
+	first_page_choices[1].setFont(_font);
+	first_page_choices[1].setString("Enter commands manually");
+	first_page_choices[1].setCharacterSize(20);
+	my_set_position(&first_page_choices[1], 0);
+	first_page_choices[2].setFont(_font);
+	first_page_choices[2].setString("Quit");
+	first_page_choices[2].setCharacterSize(20);
+	my_set_position(&first_page_choices[2], 40);
+}
+
+void	master_ui::draw_first_page(int whichOne)
+{
+	if (whichOne == 0){
+		first_page_choices[0].setStyle(sf::Text::Underlined);
+		first_page_choices[1].setStyle(sf::Text::Regular);
+		first_page_choices[2].setStyle(sf::Text::Regular);
+	}else if (whichOne == 1){
+		first_page_choices[0].setStyle(sf::Text::Regular);
+		first_page_choices[1].setStyle(sf::Text::Underlined);
+		first_page_choices[2].setStyle(sf::Text::Regular);
+	}else if (whichOne == 2){
+		first_page_choices[0].setStyle(sf::Text::Regular);
+		first_page_choices[1].setStyle(sf::Text::Regular);
+		first_page_choices[2].setStyle(sf::Text::Underlined);
+	}
+	_window.draw(first_page_choices[0]);
+	_window.draw(first_page_choices[1]);
+	_window.draw(first_page_choices[2]);
+}
+
+void	master_ui::first_page()
+{
+	sf::Event	event;
+	static int	whichOne = 0;
+
+	while (_window.pollEvent(event)){
+		if (event.type == sf::Event::Closed ||
+			sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			_window.close();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			whichOne += (whichOne > 1) ? -2 : 1;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			whichOne -= (whichOne < 1) ? -2 : 1;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)){
+			if (whichOne == 0)
+				_actual_page = 1;
+			else if (whichOne == 1)
+				_actual_page = 2;
+			else
+				_window.close();
+		}
+	}
+	draw_first_page(whichOne);
+}
+
+void	master_ui::draw_second_page()
+{
+	sf::Text	test;
+
+	test.setFont(_font);
+	test.setString("This is the second page");
+	test.setCharacterSize(20);
+	my_set_position(&test, 0);
+	_window.draw(test);
+}
+
+void	master_ui::second_page()
+{
+	sf::Event	event;
+
+	while (_window.pollEvent(event)){
+		if (event.type == sf::Event::Closed ||
+			sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			_window.close();
+	}
+	draw_second_page();
+}
+
+void	master_ui::draw_third_page()
+{
+	sf::Text	test;
+
+	test.setFont(_font);
+	test.setString("This is the third page");
+	test.setCharacterSize(20);
+	my_set_position(&test, 0);
+	_window.draw(test);
+}
+
+void	master_ui::third_page()
+{
+	sf::Event	event;
+
+	while (_window.pollEvent(event)){
+		if (event.type == sf::Event::Closed ||
+			sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			_window.close();
+	}
+	draw_third_page();
 }
 
 void	master_ui::run_menu()
 {
-	sf::Event event;
 	sf::Vector2i	pos;
-	bool	whichOne = true;
 
 	pos.x = sf::VideoMode::getDesktopMode().width / 2 - 540;
 	pos.y = sf::VideoMode::getDesktopMode().height / 2 - 420;
 	_window.create(sf::VideoMode(1080, 840), "The Plazza");
 	_window.setPosition(pos);
-	init_choices();
+	init_first_page();
 	while (_window.isOpen()){
-		while (_window.pollEvent(event)){
-			if (event.type == sf::Event::Closed)
-				_window.close();
-			if (event.key.code == sf::Keyboard::Escape)
-				_window.close();
-			if (event.key.code == sf::Keyboard::Down)
-				whichOne = false;
-			if (event.key.code == sf::Keyboard::Up)
-				whichOne = true;
-		}
 		_window.clear(sf::Color::Black);
-		draw_choice(whichOne);
+		if (_actual_page == 0)
+			first_page();
+		else if (_actual_page == 1)
+			second_page();
+		else if (_actual_page == 2)
+			third_page();
 		_window.display();
 	}
 	_run = false;
