@@ -10,6 +10,7 @@
 client::client(server &parent, int socket) : _socket(socket), _parent(parent)
 {
 	std::cout << "client: new client\n";
+	send(_socket, "\n", 1, 0);
 }
 
 client::~client()

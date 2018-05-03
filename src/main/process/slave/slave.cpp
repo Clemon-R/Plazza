@@ -10,26 +10,18 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-slave::slave(unsigned short port) : _parent(getpid()), _port(port), _socket(-1), _protocol(getprotobyname("TCP"))
+slave::slave(unsigned short port) : _port(port), _socket(-1), _protocol(getprotobyname("TCP")), _run(true)
 {
-	int	process = -1;
-
-	std::cout << "slave (parent): parent process - " << getpid() << std::endl;
-	process = fork();
-	if (process == 0){
-		std::cout << "slave: process - " << getpid() << std::endl;
-		this->run();
-	}
-	else if (process > 0)
-		std::cout << "slave (parent): new process has been created\n";
+	std::cout << "slave: process - " << getpid() << std::endl;
+	this->run();
 }
 
 slave::~slave()
 {
-	if (_parent == getpid()){
-		std::cout << "slave (parent): dead\n";
-		return;
-	}
+	_run = false;
+	if (_socket != -1)
+		close(_socket);
+	std::cout << "slave: destroyed\n";
 }
 
 void	slave::connect_to_server()
@@ -50,18 +42,65 @@ void	slave::connect_to_server()
 	std::cout << "slave: successfull connected\n";
 }
 
+void	slave::reception_packet()
+{
+	struct pollfd	action;
+	char		buff[4097];
+	int		len;
+	std::string	packet;
+
+	std::cout << "slave: starting reception packet...\n";
+	action.fd = _socket;
+	action.events = POLLIN;
+	action.revents = 0;
+	while (this && _run){
+		std::cout << "slave: waiting packet...\n";
+		while (this && poll(&action, 1, 10) == 0 && _run);
+		if (action.revents & POLLIN){
+			do{
+				len = read(_socket, buff, 4096);
+				buff[len] = 0;
+				packet.append(std::string(buff));
+			} while (len == 4096);
+			if (packet.empty())
+				break;
+			handle_packet(packet);
+		}
+		packet.clear();
+		action.revents = 0;
+	}
+}
+
+void	slave::handle_packet(const std::string &packet)
+{
+	std::cout << "slave: reception packet\n";
+	std::cout << packet;
+}
+
 void	slave::run()
+{
+	bool	_run;
+	std::thread	reception([this, &_run](){this->reception_packet();});
+	std::thread	dispatch([this](){this->dispatch_task();});
+
+	std::cout << "slave: running...\n";
+	connect_to_server();
+	reception.join();
+	dispatch.join();
+	end_run();
+}
+
+void	slave::dispatch_task()
 {
 	std::size_t	last = utils::get_seconds();
 
-	std::cout << "slave: running... " << last << "\n";
-	connect_to_server();
 	while (utils::get_seconds() - last < 5){
 	}
-	end_run();	
+	_run = false;
 }
 
 void	slave::end_run()
 {
-	std::cout << "slave: dead\n";
+	delete this;
+	std::cout << "slave: trying to kill...\n";
 }

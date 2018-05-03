@@ -33,9 +33,18 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 {
 	std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	result;
 	std::unique_ptr<std::thread>	bg;
-	std::unique_ptr<slave>		sl;
 
-	bg.reset(new std::thread([this, &sl](){sl.reset(new slave(_server->get_port()));}));
+	bg.reset(new std::thread([this](){
+		int	process;
+
+		process = fork();
+		if (process == 0){
+			std::cout << "master: process - " << getpid() << std::endl;
+			new slave(_server->get_port());
+		}
+		else if (process > 0)
+			std::cout << "master: new process has been created\n";
+	}));
 	bg->join();
 	return (result);
 }

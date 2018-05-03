@@ -32,8 +32,6 @@ public:
 	unsigned short	get_port() const noexcept;
 private:
 	void	pack_all_socket(struct pollfd **);
-	int	get_the_upper_socket() const;
-	void	clean_list_clients();
 
 	bool	handle_action(struct pollfd *, std::size_t);
 	void	handle_client();

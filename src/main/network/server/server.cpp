@@ -53,21 +53,6 @@ void	server::pack_all_socket(struct pollfd **actions)
 	}
 }
 
-void	server::clean_list_clients()
-{
-	std::map<int, std::unique_ptr<client>>::iterator	it = _clients.begin();
-
-	while (it != _clients.end()){
-		if (!(*it).second)
-			it = _clients.erase(it);
-	}
-}
-
-int	server::get_the_upper_socket() const
-{
-	return (_socket);
-}
-
 void	server::handle_client()
 {
 	int	client_fd = 0;
@@ -112,16 +97,13 @@ void	server::run()
 		actions = new struct pollfd[_clients.size() + 1]();
 		if (!actions)
 			break;
-		std::cout << "server: adding all reader\n";
+		std::cout << "server: preparing poll event...\n";
 		pack_all_socket((struct pollfd **)&actions);
-		std::cout << "server: finding the big one socket\n";
-		fd = get_the_upper_socket();
-		if (fd == -1)
-			break;
 		std::cout << "server: waiting action...\n";
 		while (poll(actions, _clients.size() + 1, 1) == 0 && _run);
 		handle_action(actions, _clients.size() + 1);
-		delete actions;
+		if (actions)
+			delete actions;
 	}
 	std::cout << "server: stopping\n";
 }

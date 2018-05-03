@@ -25,8 +25,11 @@ public:
 	void	end_run();
 private:
 	void	connect_to_server();
+	void	reception_packet();
+	void	handle_packet(const std::string &packet);
+	void	dispatch_task();
 
-	int	_parent;
+	bool	_run;
 	unsigned short	_port;
 	int		_socket;
 	struct protoent	*_protocol;
