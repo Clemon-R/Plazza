@@ -6,7 +6,7 @@
 */
 
 #include "main.hpp"
-#include "main/master_ui.hpp"
+#include "main/process/master/master_ui.hpp"
 #include "utils/commands/parser.hpp"
 
 void	init_plazza(const int max)

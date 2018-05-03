@@ -15,7 +15,8 @@
 	#include <mutex>
 	#include <map>
 	#include "utils/commands/command.hpp"
-	#include "main/slave.hpp"
+	#include "main/process/slave/slave.hpp"
+	#include "main/network/server/server.hpp"
 
 class master
 {
@@ -25,6 +26,7 @@ public:
 
 	virtual void	run_interface() = 0;
 	void	run_dispatch();
+	void	run_server();
 	void	run();
 	void	set_commands(const std::list<command> &);
 	void	set_graphic_mode() noexcept;
@@ -34,6 +36,7 @@ protected:
 	std::map<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	_slaves;
 	const std::size_t	_max_thread;
 	std::list<command>	_commands;
+	std::unique_ptr<server>	_server;
 	bool			_graphic_mode;
 	bool			_run;
 };

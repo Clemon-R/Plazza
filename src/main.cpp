@@ -6,7 +6,6 @@
 */
 
 #include "main.hpp"
-#include "main/master.hpp"
 #include <cctype>
 #include <memory>
 

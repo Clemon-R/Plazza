@@ -8,7 +8,7 @@
 #ifndef MASTER_NONE_HPP_
 	#define MASTER_NONE_HPP_
 
-	#include "main/master.hpp"
+	#include "main/process/master/master.hpp"
 
 class master_none : public master
 {

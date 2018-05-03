@@ -5,7 +5,7 @@
 ** master
 */
 
-#include "main/master.hpp"
+#include "main/process/master/master.hpp"
 
 master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false), _run(true)
 {
@@ -33,9 +33,18 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 {
 	std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	result;
 	std::unique_ptr<std::thread>	bg;
-	std::unique_ptr<slave>		sl;
 
-	bg.reset(new std::thread([&sl](){sl.reset(new slave());}));
+	bg.reset(new std::thread([this](){
+		int	process;
+
+		process = fork();
+		if (process == 0){
+			std::cout << "master: process - " << getpid() << std::endl;
+			new slave(_server->get_port());
+		}
+		else if (process > 0)
+			std::cout << "master: new process has been created\n";
+	}));
 	bg->join();
 	return (result);
 }
@@ -43,8 +52,8 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 void	master::run_dispatch()
 {
 	std::list<command>::iterator	it;
-	std::cout << "master: dispatching commands...\n";
 
+	std::cout << "master: dispatching commands...\n";
 	do{
 		it = _commands.begin();
 		while (it != _commands.end()){
@@ -52,15 +61,27 @@ void	master::run_dispatch()
 			it = _commands.erase(it);
 		}
 	} while (_run || _commands.size() > 0);
+	if (_server)
+		_server->stop();
 	std::cout << "master: end of running\n";
+}
+
+void	master::run_server()
+{
+	std::cout << "master: starting server...\n";
+	_server.reset(new server());
+	if (_server)
+		_server->run();
 }
 
 void	master::run()
 {
 	std::thread	interface([this](){this->run_interface();});
 	std::thread	dispatch([this](){this->run_dispatch();});
+	std::thread	server([this](){this->run_server();});
 
 	std::cout << "master: running...\n";
+	server.join();
 	interface.join();
 	dispatch.join();
 }

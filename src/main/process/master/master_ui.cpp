@@ -5,13 +5,18 @@
 ** master_ui
 */
 
-#include "main/master.hpp"
-#include "main/master_ui.hpp"
+#include "main/process/master/master.hpp"
+#include "main/process/master/master_ui.hpp"
+#include <dirent.h>
+
+/* Constructor */
 
 master_ui::master_ui(const int max) : master(max)
 {
 	_actual_page = 0;
 }
+
+/* Init functions */
 
 bool	master_ui::init_graphic()
 {
@@ -20,17 +25,6 @@ bool	master_ui::init_graphic()
 	std::cout << "master: graphic needed\nmaster: running init...\n";
 	_graphic.reset(nullptr);
 	return (true);
-}
-
-void	master_ui::my_set_position(sf::Text *text, int gap)
-{
-	sf::FloatRect	rect;
-
-	rect = text->getLocalBounds();
-	text->setOrigin(rect.left + rect.width / 2.0f,
-		rect.top + rect.height / 2.0f);
-	text->setPosition(sf::Vector2f(_window.getSize().x / 2.0f,
-		_window.getSize().y / 2.0f + gap));
 }
 
 void	master_ui::init_first_page()
@@ -49,16 +43,52 @@ void	master_ui::init_first_page()
 	my_set_position(&first_page_choices[1], 20);
 }
 
+void	master_ui::init_second_page()
+{
+	DIR	*dir = opendir("files");
+	struct dirent	*dir_struct;
+
+	if (dir == NULL){
+		_window.close();
+		std::cerr << "Failed to open directory." << std::endl;
+	}
+	while (dir_struct = readdir(dir)){
+		if (dir_struct->d_name[0] != '.' && dir_struct->d_type == DT_REG)
+			_file_list.push_back(string_converter(dir_struct->d_name));
+	}
+	closedir(dir);
+}
+
+/* Utility functions */
+
+void	master_ui::my_set_position(sf::Text *text, int gap)
+{
+	sf::FloatRect	rect;
+
+	rect = text->getLocalBounds();
+	text->setOrigin(rect.left + rect.width / 2.0f,
+		rect.top + rect.height / 2.0f);
+	text->setPosition(sf::Vector2f(_window.getSize().x / 2.0f,
+		_window.getSize().y / 2.0f + gap));
+}
+
+std::string	master_ui::string_converter(char *old_string)
+{
+	std::string	new_string(old_string);
+
+	return (new_string);
+}
+
+/* First page */
+
 void	master_ui::draw_first_page(int whichOne)
 {
 	if (whichOne == 0){
 		first_page_choices[0].setStyle(sf::Text::Underlined);
 		first_page_choices[1].setStyle(sf::Text::Regular);
-		first_page_choices[2].setStyle(sf::Text::Regular);
 	}else if (whichOne == 1){
 		first_page_choices[0].setStyle(sf::Text::Regular);
 		first_page_choices[1].setStyle(sf::Text::Underlined);
-		first_page_choices[2].setStyle(sf::Text::Regular);
 	}
 	_window.draw(first_page_choices[0]);
 	_window.draw(first_page_choices[1]);
@@ -87,12 +117,7 @@ void	master_ui::first_page()
 	draw_first_page(whichOne);
 }
 
-void	master_ui::init_second_page()
-{
-
-	// for (auto & p : std::filesystem::directory_iterator("."))
-	// 	std::cout << p << std::endl;
-}
+/* Second page */
 
 void	master_ui::draw_second_page()
 {
@@ -117,17 +142,14 @@ void	master_ui::second_page()
 	draw_second_page();
 }
 
-void	master_ui::run_main_menu()
+/* Menu */
+
+void	master_ui::run_menu()
 {
 	if (_actual_page == 0)
 		first_page();
 	else if (_actual_page == 1)
 		second_page();
-}
-
-void	master_ui::run_display_file()
-{
-	
 }
 
 void	master_ui::run_interface()
@@ -142,10 +164,7 @@ void	master_ui::run_interface()
 	init_second_page();
 	while (_window.isOpen()){
 		_window.clear(sf::Color::Black);
-		if (_actual_page == 0)
-			run_main_menu();
-		else
-			run_display_file();
+		run_menu();
 		_window.display();
 	}
 	_run = false;
