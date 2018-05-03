@@ -43,8 +43,8 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 void	master::run_dispatch()
 {
 	std::list<command>::iterator	it;
-	std::cout << "master: dispatching commands...\n";
 
+	std::cout << "master: dispatching commands...\n";
 	do{
 		it = _commands.begin();
 		while (it != _commands.end()){
@@ -52,15 +52,27 @@ void	master::run_dispatch()
 			it = _commands.erase(it);
 		}
 	} while (_run || _commands.size() > 0);
+	if (_server)
+		_server->stop();
 	std::cout << "master: end of running\n";
+}
+
+void	master::run_server()
+{
+	std::cout << "master: starting server...\n";
+	_server.reset(new server());
+	if (_server)
+		_server->run();
 }
 
 void	master::run()
 {
 	std::thread	interface([this](){this->run_interface();});
 	std::thread	dispatch([this](){this->run_dispatch();});
+	std::thread	server([this](){this->run_server();});
 
 	std::cout << "master: running...\n";
-	dispatch.join();
+	server.join();
 	interface.join();
+	dispatch.join();
 }

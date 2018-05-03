@@ -25,7 +25,9 @@ SRC_UTILS	=	$(addprefix src/utils/,	\
 
 SRC	=	$(addprefix src/main/,	\
 			process/master/master.cpp	\
-			process/slave/slave.cpp	\
+			process/slave/slave.cpp		\
+			network/server/server.cpp	\
+			network/client/client.cpp	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\
