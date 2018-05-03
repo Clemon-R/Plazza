@@ -35,7 +35,7 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 	std::unique_ptr<std::thread>	bg;
 	std::unique_ptr<slave>		sl;
 
-	bg.reset(new std::thread([&sl](){sl.reset(new slave());}));
+	bg.reset(new std::thread([this, &sl](){sl.reset(new slave(_server->get_port()));}));
 	bg->join();
 	return (result);
 }

@@ -136,3 +136,8 @@ std::map<int, std::unique_ptr<client>>	&server::get_clients()
 {
 	return (_clients);
 }
+
+unsigned short	server::get_port() const noexcept
+{
+	return (_port);
+}

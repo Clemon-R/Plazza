@@ -29,6 +29,7 @@ public:
 	void	stop();
 
 	std::map<int, std::unique_ptr<client>>	&get_clients();
+	unsigned short	get_port() const noexcept;
 private:
 	void	pack_all_socket(struct pollfd **);
 	int	get_the_upper_socket() const;
