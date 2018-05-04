@@ -14,18 +14,32 @@
 class server;
 	#include "main/network/server/server.hpp"
 
+class slave;
+	#include "main/process/slave/slave.hpp"
+
 class client
 {
 public:
-	client(server &parent, int socket);
+	client(slave *parent, int socket);
+	client(server *parent, int socket);
 	~client();
 
 	const int	get_socket() const noexcept;
+	server	*get_server() const noexcept;
+	slave	*get_slave() const noexcept;
 	void		reception_packet();
+	void	set_place(int);
+	int	get_place() const noexcept;
+
+	void	run();
+	bool	is_running();
 private:
-	void		handle_packet(const std::string &packet);
+	void		handle_packet(const char *packet);
 
 	int	_socket;
-	server	&_parent;
+	server	*_parent;
+	slave	*_slave;
+	bool	_run;
+	int	_place;
 };
 #endif /* !CLIENT_HPP_ */

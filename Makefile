@@ -28,6 +28,10 @@ SRC	=	$(addprefix src/main/,	\
 			process/slave/slave.cpp		\
 			network/server/server.cpp	\
 			network/client/client.cpp	\
+			network/message_handler.cpp	\
+			network/imessage.cpp	\
+			network/messages/command.cpp	\
+			network/messages/place.cpp	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\

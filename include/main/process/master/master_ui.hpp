@@ -16,7 +16,7 @@ class master_ui : public master
 {
 public:
 	master_ui(const int);
-	void	run_interface(void) override final;
+	void	run_interface(std::mutex &lock) override final;
 	void	run_menu(void);
 	void	run_display_file(void);
 	bool	init_graphic(void);

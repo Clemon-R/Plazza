@@ -14,6 +14,6 @@ class master_none : public master
 {
 public:
 	master_none(const int);
-	void	run_interface() override final;
+	void	run_interface(std::mutex &lock) override final;
 };
 #endif /* !MASTER_NONE_HPP_ */

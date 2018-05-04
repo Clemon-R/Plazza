@@ -19,9 +19,10 @@ static bool	compare_commands(const command &first, const command &second)
 	return (true);
 }
 
-void	master_none::run_interface()
+void	master_none::run_interface(std::mutex &lock)
 {
 	std::string	line;
+	std::list<command>	list;
 
 	std::cout << "master: run interface without graphic...\n";
 	std::cout << "***Enter your commands***\n";
@@ -30,7 +31,13 @@ void	master_none::run_interface()
 			std::cout << "\n";
 			break;
 		}
-		_commands.merge(commandParser::parse_line(line), compare_commands);
+		lock.lock();
+		list = _commands;
+		for (const auto &elem : commandParser::parse_line(line))
+			list.push_back(elem);
+		_commands = list;
+		lock.unlock();
+		std::cout << "***Enter your commands***\n";
 	}
 	std::cout << "master: end of line\n";
 	_run = false;

@@ -16,6 +16,7 @@
 	#include <netdb.h>
 	#include <poll.h>
 	#include <unistd.h>
+	#include <thread>
 class client;
 	#include "main/network/client/client.hpp"
 
@@ -31,9 +32,6 @@ public:
 	std::map<int, std::unique_ptr<client>>	&get_clients();
 	unsigned short	get_port() const noexcept;
 private:
-	void	pack_all_socket(struct pollfd **);
-
-	bool	handle_action(struct pollfd *, std::size_t);
 	void	handle_client();
 
 	struct protoent	*_protocol;
@@ -43,5 +41,6 @@ private:
 
 	bool		_run;
 	std::map<int, std::unique_ptr<client>>	_clients;
+	std::map<int, std::unique_ptr<std::thread>>	_clients_thread;
 };
 #endif /* !SERVER_HPP_ */

@@ -25,6 +25,7 @@ server::server() : _protocol(getprotobyname("TCP")), _socket(-1), _run(true), _p
 		return;
 	if(getsockname(_socket, (struct sockaddr *)&_config, &addrlen) != -1) 
 		_port = static_cast<uint16_t >(ntohs(_config.sin_port));
+	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&option, sizeof(option));
 	std::cout << "server: random port is " << _port << std::endl;
 	std::cout << "server: created\n";
 }
@@ -38,72 +39,42 @@ server::~server()
 	std::cout << "server: destroyed\n";
 }
 
-void	server::pack_all_socket(struct pollfd **actions)
-{
-	int	i = 1;
-
-	(*actions)[0].fd = _socket;
-	(*actions)[0].events = POLLIN;
-	(*actions)[0].revents = 0;
-	for (const auto &current : _clients){
-		(*actions)[i].fd = current.second->get_socket();
-		(*actions)[i].events = POLLIN;
-		(*actions)[i].revents = 0;
-		i++;
-	}
-}
-
 void	server::handle_client()
 {
 	int	client_fd = 0;
 	struct sockaddr_in	s_client_in;
 	socklen_t		s_client_size = sizeof(s_client_in);
 	std::unique_ptr<client>	current;
+	std::unique_ptr<std::thread>	bg;
+	client	*tmp;
 
 	std::cout << "server: action on server\n";
 	client_fd = accept(_socket, (struct sockaddr *)&s_client_in, &s_client_size);
 	if (client_fd == -1)
 		return;
-	current.reset(new client(*this, client_fd));
+	tmp = new client(this, client_fd);
+	current.reset(tmp);
 	_clients.insert(std::pair<int, std::unique_ptr<client>>(client_fd, std::move(current)));
-}
-
-bool	server::handle_action(struct pollfd *actions, std::size_t size)
-{
-	std::map<int, std::unique_ptr<client>>::iterator	it;
-
-	for (int i = 0;i < size;i++){
-		if (!(actions[i].revents & POLLIN))
-			continue;
-		std::cout << "server: action on - " << actions[i].fd << std::endl;
-		if (actions[i].fd == _socket)
-			handle_client();
-		else if ((it = _clients.find(actions[i].fd)) != _clients.end())
-			(*it).second->reception_packet();
-	}
-	return (true);
+	bg.reset(new std::thread([&tmp](){tmp->run();}));
+	_clients_thread.insert(std::pair<int, std::unique_ptr<std::thread>>(client_fd, std::move(bg)));
 }
 
 void	server::run()
 {
-	struct pollfd	*actions = nullptr;
+	struct pollfd	action;
 	int	fd;
 
 	std::cout << "server: starting...\n";
 	if (listen(_socket, 1024) == -1)
 		return;
+	action.fd = _socket;
+	action.events = POLLIN;
+	action.revents = 0;
 	std::cout << "server: running...\n";
 	while (_run){
-		actions = new struct pollfd[_clients.size() + 1]();
-		if (!actions)
-			break;
-		std::cout << "server: preparing poll event...\n";
-		pack_all_socket((struct pollfd **)&actions);
-		std::cout << "server: waiting action...\n";
-		while (poll(actions, _clients.size() + 1, 1) == 0 && _run);
-		handle_action(actions, _clients.size() + 1);
-		if (actions)
-			delete actions;
+		std::cout << "server: waiting client...\n";
+		while (poll(&action, 1, 0) == 0 && _run);
+		handle_client();
 	}
 	std::cout << "server: stopping\n";
 }
