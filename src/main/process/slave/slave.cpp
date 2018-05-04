@@ -6,6 +6,7 @@
 */
 
 #include "main/process/slave/slave.hpp"
+#include "main/network/message_handler.hpp"
 #include "utils/utils.hpp"
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -47,7 +48,6 @@ void	slave::reception_packet()
 	struct pollfd	action;
 	char		buff[4097];
 	int		len;
-	std::string	packet;
 
 	std::cout << "slave: starting reception packet...\n";
 	action.fd = _socket;
@@ -57,24 +57,20 @@ void	slave::reception_packet()
 		std::cout << "slave: waiting packet...\n";
 		while (this && poll(&action, 1, 10) == 0 && _run);
 		if (action.revents & POLLIN){
-			do{
-				len = read(_socket, buff, 4096);
-				buff[len] = 0;
-				packet.append(std::string(buff));
-			} while (len == 4096);
-			if (packet.empty())
-				break;
-			handle_packet(packet);
+			len = recv(_socket, buff, 4096, 0);
+			buff[len] = 0;
+			handle_packet(buff);
 		}
-		packet.clear();
 		action.revents = 0;
 	}
 }
 
-void	slave::handle_packet(const std::string &packet)
+void	slave::handle_packet(const char *packet)
 {
-	std::cout << "slave: reception packet\n";
-	std::cout << packet;
+	std::unique_ptr<command>	com = message_handler::parse_packet(packet);
+	
+	if (com)
+		std::cout << "slave: command found - " << com->get_file() << "\n";
 }
 
 void	slave::run()
@@ -94,7 +90,7 @@ void	slave::dispatch_task()
 {
 	std::size_t	last = utils::get_seconds();
 
-	while (utils::get_seconds() - last < 5){
+	while (utils::get_seconds() - last < 60){
 	}
 	_run = false;
 }

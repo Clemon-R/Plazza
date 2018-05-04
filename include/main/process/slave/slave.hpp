@@ -14,6 +14,8 @@
 	#include <sys/socket.h>
 	#include <netdb.h>
 	#include <poll.h>
+	#include <list>
+	#include "utils/commands/command.hpp"
 
 class slave
 {
@@ -26,7 +28,7 @@ public:
 private:
 	void	connect_to_server();
 	void	reception_packet();
-	void	handle_packet(const std::string &packet);
+	void	handle_packet(const char *packet);
 	void	dispatch_task();
 
 	bool	_run;

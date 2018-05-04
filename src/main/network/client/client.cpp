@@ -6,11 +6,11 @@
 */
 
 #include "main/network/client/client.hpp"
+#include "main/network/message_handler.hpp"
 
 client::client(server &parent, int socket) : _socket(socket), _parent(parent)
 {
 	std::cout << "client: new client\n";
-	send(_socket, "\n", 1, 0);
 }
 
 client::~client()
@@ -45,7 +45,6 @@ void	client::handle_packet(const std::string &packet)
 			_parent.get_clients().erase(it);
 		return;
 	}
-	std::cout << "client: packet - " << packet << std::endl;
 }
 
 const int	client::get_socket() const noexcept

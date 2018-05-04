@@ -6,6 +6,7 @@
 */
 
 #include "main/process/master/master.hpp"
+#include "main/network/message_handler.hpp"
 
 master::master(const int max_thread) : _max_thread(max_thread), _graphic_mode(false), _run(true)
 {
@@ -81,6 +82,7 @@ void	master::run()
 	std::thread	server([this](){this->run_server();});
 
 	std::cout << "master: running...\n";
+	message_handler::init_messages();
 	server.join();
 	interface.join();
 	dispatch.join();

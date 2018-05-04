@@ -94,7 +94,7 @@ void	server::run()
 		return;
 	std::cout << "server: running...\n";
 	while (_run){
-		actions = new struct pollfd[_clients.size() + 1]();
+		actions = new struct pollfd[_clients.size() + 1];
 		if (!actions)
 			break;
 		std::cout << "server: preparing poll event...\n";
@@ -102,8 +102,6 @@ void	server::run()
 		std::cout << "server: waiting action...\n";
 		while (poll(actions, _clients.size() + 1, 1) == 0 && _run);
 		handle_action(actions, _clients.size() + 1);
-		if (actions)
-			delete actions;
 	}
 	std::cout << "server: stopping\n";
 }
