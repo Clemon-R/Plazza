@@ -31,6 +31,7 @@ SRC	=	$(addprefix src/main/,	\
 			network/message_handler.cpp	\
 			network/imessage.cpp	\
 			network/messages/command.cpp	\
+			network/messages/place.cpp	\
 			)
 
 SRC_TESTS	=	$(addprefix tests/,	\

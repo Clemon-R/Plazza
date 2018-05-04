@@ -31,6 +31,7 @@ public:
 	void	set_commands(const std::list<command> &);
 	void	set_graphic_mode() noexcept;
 private:
+	void	dispatch_command(command &com);
 	std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	create_slave();
 protected:
 	std::map<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	_slaves;

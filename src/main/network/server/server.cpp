@@ -64,7 +64,7 @@ void	server::handle_client()
 	client_fd = accept(_socket, (struct sockaddr *)&s_client_in, &s_client_size);
 	if (client_fd == -1)
 		return;
-	current.reset(new client(*this, client_fd));
+	current.reset(new client(this, client_fd));
 	_clients.insert(std::pair<int, std::unique_ptr<client>>(client_fd, std::move(current)));
 }
 

@@ -10,6 +10,7 @@
 
 	#include <memory>
 	#include "utils/commands/command.hpp"
+	#include "main/network/client/client.hpp"
 
 class imessage
 {
@@ -25,8 +26,8 @@ public:
 	char	get_char();
 	std::string	get_string();
 
-	virtual std::unique_ptr<command>	decode(const char *) = 0;
-	virtual void	encode(command &com) = 0;
+	virtual std::unique_ptr<command>	decode(client &client, const char *) = 0;
+	virtual void	encode(client &client, command *com) = 0;
 
 	const std::string	&get_buff();
 protected:

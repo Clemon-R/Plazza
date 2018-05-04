@@ -41,13 +41,27 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 		process = fork();
 		if (process == 0){
 			std::cout << "master: process - " << getpid() << std::endl;
-			new slave(_server->get_port());
+			new slave(_server->get_port(), _max_thread);
 		}
 		else if (process > 0)
 			std::cout << "master: new process has been created\n";
 	}));
 	bg->join();
 	return (result);
+}
+
+void	master::dispatch_command(command &com)
+{
+	client	*current = nullptr;
+
+	for (const auto &client : _server->get_clients()){
+		if (client.second->get_place() > 0){
+			current = client.second.get();
+			break;
+		}
+	}
+	if (!current)
+		create_slave();	
 }
 
 void	master::run_dispatch()
@@ -58,7 +72,7 @@ void	master::run_dispatch()
 	do{
 		it = _commands.begin();
 		while (it != _commands.end()){
-			create_slave();
+			dispatch_command(*it);
 			it = _commands.erase(it);
 		}
 	} while (_run || _commands.size() > 0);

@@ -8,9 +8,14 @@
 #include "main/network/client/client.hpp"
 #include "main/network/message_handler.hpp"
 
-client::client(server &parent, int socket) : _socket(socket), _parent(parent)
+client::client(server *parent, int socket) : _socket(socket), _parent(parent), _slave(nullptr), _place(0)
 {
-	std::cout << "client: new client\n";
+	std::cout << "client: new server client " << _socket << std::endl;
+}
+
+client::client(slave *parent, int socket) : _socket(socket), _parent(nullptr), _slave(parent), _place(0)
+{
+	std::cout << "client: new slave client " << _socket << std::endl;
 }
 
 client::~client()
@@ -28,26 +33,51 @@ void	client::reception_packet()
 
 	std::cout << "client: " << _socket << std::endl;
 	std::cout << "client: new packet received\n";
-	do{
-		len = read(_socket, buff, 4096);
-		buff[len] = 0;
-		packet.append(std::string(buff));
-	} while (len == 4096);
-	handle_packet(packet);
+	len = recv(_socket, buff, 4096, 0);
+	buff[len] = 0;
+	if (len > 0)
+		message_handler::parse_packet(*this, buff);
+	if (_parent || _slave)
+		handle_packet(buff);
 }
 
-void	client::handle_packet(const std::string &packet)
+void	client::handle_packet(const char *packet)
 {
-	std::map<int, std::unique_ptr<client>>::iterator	it = _parent.get_clients().find(_socket);
+	std::map<int, std::unique_ptr<client>>::iterator	it;
 
-	if (packet.empty()){
-		if (it != _parent.get_clients().end())
-			_parent.get_clients().erase(it);
+	if (*packet)
 		return;
+	if (_slave != nullptr){
+		_slave->set_run(false);
+	}
+	if (_parent != nullptr){
+		it = _parent->get_clients().find(_socket);
+		if (it != _parent->get_clients().end())
+			_parent->get_clients().erase(it);
 	}
 }
 
 const int	client::get_socket() const noexcept
 {
 	return (_socket);
+}
+
+server		*client::get_server() const noexcept
+{
+	return (_parent);
+}
+
+slave		*client::get_slave() const noexcept
+{
+	return (_slave);
+}
+
+void	client::set_place(int value)
+{
+	_place = value;
+}
+
+int	client::get_place()
+{
+	return (_place);
 }

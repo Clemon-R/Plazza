@@ -11,15 +11,17 @@ message_command::message_command() : imessage(1)
 {
 }
 
-void	message_command::encode(command &com)
+void	message_command::encode(client &client, command *com)
 {
 	_encode.clear();
 	write_char(_id);
-	write_int(com.get_info());
-	write_string(com.get_file());
+	if (!com)
+		return;
+	write_int(com->get_info());
+	write_string(com->get_file());
 }
 
-std::unique_ptr<command>	message_command::decode(const char *packet)
+std::unique_ptr<command>	message_command::decode(client &client, const char *packet)
 {
 	std::unique_ptr<command>	result;
 	int		info;

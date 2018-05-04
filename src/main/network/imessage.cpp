@@ -19,7 +19,6 @@ void	imessage::write_int(int value)
 	for (int i = 3;i >= 0;i--){
 		result[i] = static_cast<char>(value & 0xff);
 		value = value >> 8;
-		std::cout << "test: " << std::to_string(result[i]) << std::endl;
 	}
 	for (int i = 0;i < 4;i++)
 		_encode += result[i];
@@ -44,7 +43,6 @@ int	imessage::get_int()
 	for (int i = 0;i < 4;i++){
 		value = value << 8;
 		value += _decode[i];
-		std::cout << "testttttt: " << std::to_string(_decode[i]) << std::endl;
 	}
 	_decode += 4;
 	return (value);

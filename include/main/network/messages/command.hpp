@@ -16,7 +16,7 @@ class message_command : public imessage
 public:
 	message_command();
 
-	void	encode(command &com) override final;
-	std::unique_ptr<command>	decode(const char *) override final;
+	void	encode(client &client, command *com) override final;
+	std::unique_ptr<command>	decode(client &client, const char *) override final;
 };
 #endif /* !COMMAND_HPP_ */
