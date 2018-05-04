@@ -37,7 +37,8 @@ private:
 
 	bool	_run;
 	std::size_t	_max;
-	std::unique_ptr<client>	_client;
+	client	*_client;
+	std::thread	*_client_thread;
 	unsigned short	_port;
 	int		_socket;
 	struct protoent	*_protocol;

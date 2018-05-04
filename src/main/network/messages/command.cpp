@@ -30,6 +30,7 @@ std::unique_ptr<command>	message_command::decode(client &client, const char *pac
 	_decode = packet;
 	info = get_int();
 	file = get_string();
+	std::cout << "message: command received on file " << file << std::endl;
 	result.reset(new command(file, static_cast<Information>(info)));
 	return (result);
 }

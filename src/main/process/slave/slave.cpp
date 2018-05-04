@@ -41,7 +41,8 @@ void	slave::connect_to_server()
 		std::cout << "slave: impossible to connect to server\n";
 		return;
 	}
-	_client.reset(new client(this, _socket));
+	_client = new client(this, _socket);
+	_client_thread = new std::thread([this](){_client->run();});
 	std::cout << "slave: successfull connected\n";
 	if (_client)
 		message_handler::send_packet(*_client, 2, nullptr);
@@ -49,33 +50,15 @@ void	slave::connect_to_server()
 
 void	slave::reception_packet()
 {
-	struct pollfd	action;
-	char		buff[4097];
-	int		len;
-
-	std::cout << "slave: starting reception packet...\n";
-	action.fd = _socket;
-	action.events = POLLIN;
-	action.revents = 0;
-	while (this && _run){
-		std::cout << "slave: waiting packet...\n";
-		while (this && poll(&action, 1, 10) == 0 && _run);
-		if (action.revents & POLLIN && _client)
-			_client->reception_packet();
-		action.revents = 0;
-	}
 }
 
 void	slave::run()
 {
 	bool	_run;
-	std::thread	reception([this, &_run](){this->reception_packet();});
-	std::thread	dispatch([this](){this->dispatch_task();});
 
 	std::cout << "slave: running...\n";
 	connect_to_server();
-	reception.join();
-	dispatch.join();
+	dispatch_task();
 	end_run();
 }
 
@@ -85,7 +68,6 @@ void	slave::dispatch_task()
 
 	while (utils::get_seconds() - last < 60){
 	}
-	_run = false;
 }
 
 void	slave::end_run()

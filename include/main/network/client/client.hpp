@@ -29,14 +29,17 @@ public:
 	slave	*get_slave() const noexcept;
 	void		reception_packet();
 	void	set_place(int);
-	int	get_place();
+	int	get_place() const noexcept;
+
+	void	run();
+	bool	is_running();
 private:
 	void		handle_packet(const char *packet);
 
 	int	_socket;
 	server	*_parent;
 	slave	*_slave;
-
+	bool	_run;
 	int	_place;
 };
 #endif /* !CLIENT_HPP_ */

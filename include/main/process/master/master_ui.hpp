@@ -15,7 +15,7 @@ class master_ui : public master
 {
 public:
 	master_ui(const int);
-	void	run_interface() override final;
+	void	run_interface(std::mutex &lock) override final;
 	bool	init_graphic();
 private:
 	std::unique_ptr<sfml>	_graphic;
