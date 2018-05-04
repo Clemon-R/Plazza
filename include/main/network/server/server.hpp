@@ -29,7 +29,8 @@ public:
 	void	run();
 	void	stop();
 
-	std::map<int, std::unique_ptr<client>>	&get_clients();
+	std::map<int, client *>	&get_clients();
+	void	set_clients(std::map<int, client *> &);
 	unsigned short	get_port() const noexcept;
 private:
 	void	handle_client();
@@ -40,7 +41,7 @@ private:
 	struct sockaddr_in	_config;
 
 	bool		_run;
-	std::map<int, std::unique_ptr<client>>	_clients;
-	std::map<int, std::unique_ptr<std::thread>>	_clients_thread;
+	std::map<int, client *>	_clients;
+	std::map<int, std::thread *>	_clients_thread;
 };
 #endif /* !SERVER_HPP_ */

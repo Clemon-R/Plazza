@@ -32,10 +32,6 @@ server::server() : _protocol(getprotobyname("TCP")), _socket(-1), _run(true), _p
 
 server::~server()
 {
-	std::cout << "server: destroying server...\n";
-	_run = false;
-	if (_socket != -1)
-		close(_socket);
 	std::cout << "server: destroyed\n";
 }
 
@@ -44,19 +40,20 @@ void	server::handle_client()
 	int	client_fd = 0;
 	struct sockaddr_in	s_client_in;
 	socklen_t		s_client_size = sizeof(s_client_in);
-	std::unique_ptr<client>	current;
-	std::unique_ptr<std::thread>	bg;
-	client	*tmp;
+	client	*current;
 
 	std::cout << "server: action on server\n";
 	client_fd = accept(_socket, (struct sockaddr *)&s_client_in, &s_client_size);
 	if (client_fd == -1)
 		return;
-	tmp = new client(this, client_fd);
-	current.reset(tmp);
-	_clients.insert(std::pair<int, std::unique_ptr<client>>(client_fd, std::move(current)));
-	bg.reset(new std::thread([&tmp](){tmp->run();}));
-	_clients_thread.insert(std::pair<int, std::unique_ptr<std::thread>>(client_fd, std::move(bg)));
+	_clients.insert(std::pair<int, client *>(client_fd, new client(this, client_fd)));
+	_clients_thread.insert(std::pair<int, std::thread *>(client_fd, new std::thread([this, client_fd](){
+		std::map<int, client *>::iterator	it = _clients
+		.find(client_fd);
+
+		if (it != _clients.end())
+			it->second->run();
+	})));
 }
 
 void	server::run()
@@ -74,18 +71,27 @@ void	server::run()
 	while (_run){
 		std::cout << "server: waiting client...\n";
 		while (poll(&action, 1, 0) == 0 && _run);
-		handle_client();
+		if (_run)
+			handle_client();
 	}
-	std::cout << "server: stopping\n";
+	if (_clients.size() > 0){
+		std::cout << "server: some client still running...\n";
+		while (_clients.size() > 0);
+	}
+	std::cout << "server: all thing terminated\n";
 }
 
 void	server::stop()
 {
 	std::cout << "server: trying to stop...\n";
 	_run = false;
+	if (_socket != -1)
+		close(_socket);
+	_socket = -1;
+	std::cout << "server: stopped\n";
 }
 
-std::map<int, std::unique_ptr<client>>	&server::get_clients()
+std::map<int, client *>	&server::get_clients()
 {
 	return (_clients);
 }
@@ -93,4 +99,9 @@ std::map<int, std::unique_ptr<client>>	&server::get_clients()
 unsigned short	server::get_port() const noexcept
 {
 	return (_port);
+}
+
+void	server::set_clients(std::map<int, client *> &value)
+{
+	_clients = value;
 }

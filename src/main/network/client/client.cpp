@@ -8,6 +8,7 @@
 #include "main/network/client/client.hpp"
 #include "main/network/message_handler.hpp"
 #include <thread>
+#include <poll.h>
 
 client::client(server *parent, int socket) : _socket(socket), _parent(parent), _slave(nullptr), _place(0), _run(true)
 {
@@ -23,17 +24,24 @@ client::client(slave *parent, int socket) : _socket(socket), _parent(nullptr), _
 
 client::~client()
 {
-	if (_socket != -1)
-		close(_socket);
-	_socket = -1;
+	stop_running();
 	std::cout << "client: destroyed\n";
 }
 
 void	client::run()
 {
+	struct pollfd	action;
+
 	std::cout << "client: running - " << (_slave ? "(slave)" : _parent ? "(server)" : "broken")<< _socket << std::endl;
-	while (_run)
+	action.fd = _socket;
+	action.events = POLLIN;
+	action.revents = 0;
+	while (_run){
+		while (poll(&action, 1, 0) == 0&& _run);
+		std::cout << "client: action\n";
 		reception_packet();
+	}
+	std::cout << "client: stop running\n";
 }
 
 void	client::reception_packet()
@@ -42,32 +50,16 @@ void	client::reception_packet()
 	char		buff[4097];
 	int		len;
 
+	std::cout << "client: new packet received\n";
 	len = recv(_socket, buff, 4096, 0);
 	buff[len] = 0;
+	std::cout << "client: size of the packet - " << len << std::endl;
 	if (len == -1)
 		return;
-	std::cout << "client: " << (_slave ? "(slave)" : _parent ? "(server)" : "broken") << _socket << std::endl;
-	std::cout << "client: new packet received\n";
-	std::cout << "client: size of the packet - " << len << std::endl;
-	if (len > 0)
-		message_handler::parse_packet(*this, buff);
+	if (len > 0 && _run)
+		message_handler::parse_packet(*this, buff, len);
 	if (len == 0 && (_parent || _slave))
-		handle_packet(buff);
-}
-
-void	client::handle_packet(const char *packet)
-{
-	std::map<int, std::unique_ptr<client>>::iterator	it;
-
-	_run = false;
-	if (_slave != nullptr){
-		_slave->set_run(false);
-	}
-	if (_parent != nullptr){
-		it = _parent->get_clients().find(_socket);
-		if (it != _parent->get_clients().end())
-			_parent->get_clients().erase(it);
-	}
+		stop_running();
 }
 
 const int	client::get_socket() const noexcept
@@ -98,4 +90,21 @@ int	client::get_place() const noexcept
 bool	client::is_running()
 {
 	return (_run);
+}
+
+void	client::stop_running()
+{
+	std::map<int, client *>::iterator	it;
+
+	_run = false;
+	if (_parent != nullptr){
+		it = _parent->get_clients().find(_socket);
+		if (it != _parent->get_clients().end()){
+			std::cout << "client: remove from the server\n";
+			_parent->get_clients().erase(it);
+		}
+	}
+	if (_socket != -1)
+		close(_socket);
+	_socket = -1;
 }

@@ -30,9 +30,12 @@ public:
 	virtual void	encode(client &client, command *com) = 0;
 
 	const std::string	&get_buff();
+	int	get_len();
+	void	set_len(int);
 protected:
 	std::string	_encode;
 	const char	*_decode;
+	int	_len;
 	char	_id;
 };
 #endif /* !IMESSAGE_HPP_ */

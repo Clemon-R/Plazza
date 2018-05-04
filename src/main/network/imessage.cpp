@@ -45,6 +45,7 @@ int	imessage::get_int()
 		value += _decode[i];
 	}
 	_decode += 4;
+	_len += 4;
 	return (value);
 }
 
@@ -53,6 +54,7 @@ char	imessage::get_char()
 	char	c = _decode[0];
 
 	_decode += 1;
+	_len += 1;
 	return (c);
 }
 
@@ -65,10 +67,21 @@ std::string	imessage::get_string()
 		result += _decode[i];
 	}
 	_decode += len;
+	_len += len;
 	return (result);
 }
 
 const std::string	&imessage::get_buff()
 {
 	return (_encode);
+}
+
+void	imessage::set_len(int len)
+{
+	_len = len;
+}
+
+int	imessage::get_len()
+{
+	return (_len);
 }

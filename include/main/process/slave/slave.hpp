@@ -32,7 +32,6 @@ public:
 	std::size_t	get_free_place();
 private:
 	void	connect_to_server();
-	void	reception_packet();
 	void	dispatch_task();
 
 	bool	_run;

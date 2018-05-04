@@ -20,9 +20,7 @@ slave::slave(unsigned short port, std::size_t max_thread) : _port(port), _socket
 
 slave::~slave()
 {
-	_run = false;
-	if (_socket != -1)
-		close(_socket);
+	end_run();
 	std::cout << "slave: destroyed\n";
 }
 
@@ -48,14 +46,8 @@ void	slave::connect_to_server()
 		message_handler::send_packet(*_client, 2, nullptr);
 }
 
-void	slave::reception_packet()
-{
-}
-
 void	slave::run()
 {
-	bool	_run;
-
 	std::cout << "slave: running...\n";
 	connect_to_server();
 	dispatch_task();
@@ -66,14 +58,20 @@ void	slave::dispatch_task()
 {
 	std::size_t	last = utils::get_seconds();
 
-	while (utils::get_seconds() - last < 60){
+	while (utils::get_seconds() - last < 5){
 	}
 }
 
 void	slave::end_run()
 {
-	delete this;
 	std::cout << "slave: trying to kill...\n";
+	_run = false;
+	if (_client)
+		_client->stop_running();
+	if (_socket != -1)
+		close(_socket);
+	_socket = -1;
+	
 }
 
 void	slave::set_run(bool value)

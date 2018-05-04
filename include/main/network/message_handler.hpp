@@ -18,7 +18,7 @@
 class message_handler
 {
 public:
-	static std::unique_ptr<command>	parse_packet(client &client, const char *packet);
+	static void	parse_packet(client &client, const char *packet, int len);
 	static void	send_packet(client &client, char id, command *com);
 
 	static std::map<char, std::unique_ptr<imessage>>	&get_messages();
