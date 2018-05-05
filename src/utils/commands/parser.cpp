@@ -46,10 +46,12 @@ std::list<command>	commandParser::parse_line(std::string &line)
 	std::list<command>	result;
 	Information	action = Information::NONE;
 	int	i;
+	int	pos;
 
+	clean_str(line);
 	std::cout << "parser: new line - " << line << std::endl;
 	for (i = line.size() - 1;i >= 0 && action != Information::UNKNOW;i -= 1){
-		if (line.at(i) != ' ')
+		if (line.at(i) != ' ' && line.at(i) != ';')
 			count++;
 		else if (count > 0){
 			if (action == Information::NONE)
@@ -58,6 +60,8 @@ std::list<command>	commandParser::parse_line(std::string &line)
 				add_command(result, action, line.substr(i + 1, count));
 			count = 0;
 		}
+		if (line.at(i) == ';')
+			action = Information::NONE;
 	}
 	if (count > 0 && action < Information::UNKNOW)
 		add_command(result, action, line.substr(i + 1, count));

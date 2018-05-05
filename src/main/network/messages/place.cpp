@@ -20,12 +20,9 @@ void	message_place::encode(client &client, command *com)
 	write_int(client.get_slave()->get_free_place());
 }
 
-std::unique_ptr<command>	message_place::decode(client &client, const char *packet)
+void	message_place::decode(client &client, const char *packet)
 {
-	std::unique_ptr<command>	result;
-
 	_decode = packet;
 	client.set_place(get_int());
 	std::cout << "message: reception of " << client.get_place() << " place(s)\n";
-	return (result);
 }

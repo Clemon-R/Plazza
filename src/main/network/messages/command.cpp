@@ -19,18 +19,31 @@ void	message_command::encode(client &client, command *com)
 		return;
 	write_int(com->get_info());
 	write_string(com->get_file());
+	write_string(com->get_response());
 }
 
-std::unique_ptr<command>	message_command::decode(client &client, const char *packet)
+void	message_command::decode(client &client, const char *packet)
 {
-	std::unique_ptr<command>	result;
 	int		info;
 	std::string	file;
+	std::string	response;
+	command		com;
 
 	_decode = packet;
 	info = get_int();
 	file = get_string();
+	response = get_string();
 	std::cout << "message: command received on file " << file << std::endl;
-	result.reset(new command(file, static_cast<Information>(info)));
-	return (result);
+	com = command(file, static_cast<Information>(info));
+	std::cout << "message: command response - " << response << std::endl;
+	com.set_response(response);
+	if (client.get_slave()){
+		client.get_slave()->get_commands().push_back(com);
+		client.get_slave()->add_to_log(com);
+	}
+	else{
+		client.get_server()->get_responses().push_back(com);
+		client.get_server()->add_to_log(com);
+	}
 }
+

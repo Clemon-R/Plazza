@@ -33,9 +33,8 @@ public:
 
 	void	run();
 	bool	is_running();
+	void	stop_running();
 private:
-	void		handle_packet(const char *packet);
-
 	int	_socket;
 	server	*_parent;
 	slave	*_slave;

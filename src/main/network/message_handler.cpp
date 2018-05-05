@@ -23,17 +23,23 @@ void	message_handler::init_messages()
 	_messages[2] = std::unique_ptr<imessage>(new message_place());
 }
 
-std::unique_ptr<command>	message_handler::parse_packet(client &client, const char *packet)
+void	message_handler::parse_packet(client &client, const char *packet, int len)
 {
-	char	id = *packet;
-	std::map<char, std::unique_ptr<imessage>>::iterator	it = _messages.find(id);
+	char	id;
+	std::map<char, std::unique_ptr<imessage>>::iterator	it;
 	std::unique_ptr<command>	result;
 
-	if (it != _messages.end())
-		return (it->second->decode(client, packet + 1));
-	else
-		std::cout << "message: packet id unknow\n";
-	return (result);
+	while (len > 0){
+		id = *packet;
+		it = _messages.find(id);
+		if (it == _messages.end())
+			break;
+		it->second->set_len(0);
+		it->second->decode(client, packet + 1);
+		packet += 1 + it->second->get_len();
+		len -= 1 + it->second->get_len();
+		std::cout << "message: packet final size - " << it->second->get_len() + 1 << std::endl;
+	}
 }
 
 void	message_handler::send_packet(client &client, char id, command *com)
@@ -46,7 +52,7 @@ void	message_handler::send_packet(client &client, char id, command *com)
 	}
 	it->second->encode(client, com);
 	if (send(client.get_socket(), it->second->get_buff().c_str(), it->second->get_buff().size(), 0) != -1)
-		std::cout << "message: send\n";
+		std::cout << "message: send - " << it->second->get_buff().size() << std::endl;
 	else
 		std::cout << "message: failed\n";
 }

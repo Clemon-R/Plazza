@@ -15,6 +15,7 @@
 	#include <netdb.h>
 	#include <poll.h>
 	#include <list>
+class command;
 	#include "utils/commands/command.hpp"
 	#include "main/network/client/client.hpp"
 
@@ -30,9 +31,10 @@ public:
 	void	set_run(bool);
 
 	std::size_t	get_free_place();
+	std::list<command>	&get_commands();
+	void	add_to_log(command &com);
 private:
 	void	connect_to_server();
-	void	reception_packet();
 	void	dispatch_task();
 
 	bool	_run;
@@ -43,5 +45,6 @@ private:
 	int		_socket;
 	struct protoent	*_protocol;
 	struct sockaddr_in	_config;
+	std::list<command>	_commands;
 };
 #endif /* !SLAVE_HPP_ */

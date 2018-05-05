@@ -52,12 +52,12 @@ std::pair<std::unique_ptr<std::thread>, std::unique_ptr<slave>>	master::create_s
 bool	master::dispatch_command(command &com)
 {
 	client	*current = nullptr;
-	std::map<int, std::unique_ptr<client>>::iterator	it;
+	std::map<int, client *>::iterator	it;
 
 	it = _server->get_clients().begin();
 	while (it != _server->get_clients().end()){
-		if (it->second->get_place() > 0){
-			current = it->second.get();
+		if (it->second->is_running() && it->second->get_place() > 0){
+			current = it->second;
 			break;
 		}
 		it++;
@@ -111,4 +111,6 @@ void	master::run()
 	std::cout << "master: running...\n";
 	message_handler::init_messages();
 	run_server();
+	dispatch.join();
+	interface.join();
 }

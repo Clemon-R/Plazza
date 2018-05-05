@@ -19,6 +19,8 @@
 	#include <thread>
 class client;
 	#include "main/network/client/client.hpp"
+class command;
+	#include "utils/commands/command.hpp"
 
 class server
 {
@@ -29,8 +31,11 @@ public:
 	void	run();
 	void	stop();
 
-	std::map<int, std::unique_ptr<client>>	&get_clients();
+	std::map<int, client *>	&get_clients();
+	void	set_clients(std::map<int, client *> &);
 	unsigned short	get_port() const noexcept;
+	std::list<command>	&get_responses();
+	void	add_to_log(command &com);
 private:
 	void	handle_client();
 
@@ -40,7 +45,8 @@ private:
 	struct sockaddr_in	_config;
 
 	bool		_run;
-	std::map<int, std::unique_ptr<client>>	_clients;
-	std::map<int, std::unique_ptr<std::thread>>	_clients_thread;
+	std::list<command>	_responses;
+	std::map<int, client *>	_clients;
+	std::map<int, std::thread *>	_clients_thread;
 };
 #endif /* !SERVER_HPP_ */
