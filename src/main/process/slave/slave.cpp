@@ -10,8 +10,10 @@
 #include "utils/utils.hpp"
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <chrono>
+#include <fstream>
 
-slave::slave(unsigned short port, std::size_t max_thread) : _port(port), _socket(-1), _max(max_thread * 2)
+slave::slave(unsigned short port, std::size_t max_thread) : _port(port), _socket(-1), _max(max_thread)
 	, _protocol(getprotobyname("TCP")), _run(true)
 {
 	std::cout << "slave: process - " << getpid() << std::endl;
@@ -57,9 +59,27 @@ void	slave::run()
 void	slave::dispatch_task()
 {
 	std::size_t	last = utils::get_seconds();
+	std::list<command>::iterator	it;
+	std::thread	*list[_max];
+	std::thread	**src;
 
 	while (utils::get_seconds() - last < 5){
+		if (_commands.size() == 0){
+			message_handler::send_packet(*_client, 2, nullptr);
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			continue;
+		}
+		it = _commands.begin();
+		for (int i = 0;it != _commands.end() && i < _max;i++){
+			if (!list[i]){
+				src = &list[i];
+				list[i] = new std::thread([it, this, src](){it->run(*_client, src);});
+				it = _commands.erase(it);
+			}
+		}
+		last = utils::get_seconds();
 	}
+	std::cout << "slave: useless\n";
 }
 
 void	slave::end_run()
@@ -82,4 +102,20 @@ void	slave::set_run(bool value)
 std::size_t	slave::get_free_place()
 {
 	return (_max);
+}
+
+std::list<command>	&slave::get_commands()
+{
+	return (_commands);
+}
+
+void	slave::add_to_log(command &com)
+{
+	std::ofstream	file("logs.txt", std::ofstream::out | std::ofstream::app);
+
+	if (!file.is_open())
+		return;
+	file << "request (" << com.get_file() << ") - " << command::convert_info(com.get_info()) << std::endl;
+	file.close();
+
 }

@@ -54,14 +54,14 @@ std::list<command>	commandParser::parse_line(std::string &line)
 		if (line.at(i) != ' ' && line.at(i) != ';')
 			count++;
 		else if (count > 0){
-			if (line.at(i) != ';' && action == Information::NONE)
+			if (action == Information::NONE)
 				action = get_action(line.substr(i + 1, count));
 			else if (action < Information::UNKNOW)
 				add_command(result, action, line.substr(i + 1, count));
-			if (line.at(i) == ';')
-				action = Information::NONE;
 			count = 0;
 		}
+		if (line.at(i) == ';')
+			action = Information::NONE;
 	}
 	if (count > 0 && action < Information::UNKNOW)
 		add_command(result, action, line.substr(i + 1, count));

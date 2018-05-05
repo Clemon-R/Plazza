@@ -6,6 +6,8 @@
 */
 
 #include "main/network/server/server.hpp"
+#include <fstream>
+#include <stdio.h>
 
 server::server() : _protocol(getprotobyname("TCP")), _socket(-1), _run(true), _port(0)
 {
@@ -13,6 +15,7 @@ server::server() : _protocol(getprotobyname("TCP")), _socket(-1), _run(true), _p
 	socklen_t addrlen = sizeof(_config);
 
 	std::cout << "server: creating server...\n";
+	remove("logs.txt");
 	if (!_protocol)
 		return;
 	_socket = socket(AF_INET, SOCK_STREAM, _protocol->p_proto);
@@ -104,4 +107,19 @@ unsigned short	server::get_port() const noexcept
 void	server::set_clients(std::map<int, client *> &value)
 {
 	_clients = value;
+}
+
+std::list<command>	&server::get_responses()
+{
+	return (_responses);
+}
+
+void	server::add_to_log(command &com)
+{
+	std::ofstream	file("logs.txt", std::ofstream::out | std::ofstream::app);
+
+	if (!file.is_open())
+		return;
+	file << "response (" << com.get_file() << ") - " << command::convert_info(com.get_info()) << ": " << com.get_response() << std::endl;
+	file.close();
 }

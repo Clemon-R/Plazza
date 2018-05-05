@@ -17,6 +17,6 @@ public:
 	message_command();
 
 	void	encode(client &client, command *com) override final;
-	std::unique_ptr<command>	decode(client &client, const char *) override final;
+	void	decode(client &client, const char *) override final;
 };
 #endif /* !COMMAND_HPP_ */
