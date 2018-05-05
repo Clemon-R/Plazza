@@ -8,6 +8,7 @@
 #include "main/network/message_handler.hpp"
 #include "main/network/messages/command.hpp"
 #include "main/network/messages/place.hpp"
+#include "main/network/messages/connection.hpp"
 #include <sys/socket.h>
 
 std::map<char, std::unique_ptr<imessage>>	message_handler::_messages;
@@ -21,6 +22,7 @@ void	message_handler::init_messages()
 {
 	_messages[1] = std::unique_ptr<imessage>(new message_command());
 	_messages[2] = std::unique_ptr<imessage>(new message_place());
+	_messages[3] = std::unique_ptr<imessage>(new message_connection());
 }
 
 void	message_handler::parse_packet(client &client, const char *packet, int len)

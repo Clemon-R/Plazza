@@ -93,6 +93,8 @@ void	command::phone_number(client &client)
 			std::cout << "command: match - " << match << std::endl;
 			_response = match;
 			message_handler::send_packet(client, 1, this);
+			if (client.get_slave())
+				message_handler::send_packet(client, 2, nullptr);
 		}
 		content = matchs.suffix().str();
 	}
@@ -109,6 +111,8 @@ void	command::ip_address(client &client)
 			std::cout << "command: match - " << match << std::endl;
 			_response = match;
 			message_handler::send_packet(client, 1, this);
+			if (client.get_slave())
+				message_handler::send_packet(client, 2, nullptr);
 		}
 		content = matchs.suffix().str();
 	}
@@ -125,6 +129,8 @@ void	command::email_address(client &client)
 			std::cout << "command: match - " << match << std::endl;
 			_response = match;
 			message_handler::send_packet(client, 1, this);
+			if (client.get_slave())
+				message_handler::send_packet(client, 2, nullptr);
 		}
 		content = matchs.suffix().str();
 	}

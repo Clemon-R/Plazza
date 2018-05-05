@@ -39,6 +39,7 @@ private:
 
 	bool	_run;
 	std::size_t	_max;
+	int		_place;
 	client	*_client;
 	std::thread	*_client_thread;
 	unsigned short	_port;

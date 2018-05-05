@@ -53,11 +53,13 @@ bool	master::dispatch_command(command &com)
 {
 	client	*current = nullptr;
 	std::map<int, client *>::iterator	it;
+	int	min = -1;
 
 	it = _server->get_clients().begin();
 	while (it != _server->get_clients().end()){
-		if (it->second->is_running() && it->second->get_place() > 0){
+		if (it->second->is_running() && (it->second->get_place() > 0 && (min > it->second->get_place() || min == -1))){
 			current = it->second;
+			min = it->second->get_place();
 			break;
 		}
 		it++;
@@ -65,7 +67,7 @@ bool	master::dispatch_command(command &com)
 	if (current){
 		std::cout << "master: dispatch command on file - " << com.get_file() << std::endl;
 		message_handler::send_packet(*current, 1, &com);
-		current->set_place(current->get_place() + 1);
+		current->set_place(current->get_place() - 1);
 		return (true);
 	}
 	return (false);
@@ -74,18 +76,18 @@ bool	master::dispatch_command(command &com)
 void	master::run_dispatch(std::mutex &lock)
 {
 	std::list<command>::iterator	it;
-	bool	first = true;
-
+	
 	std::cout << "master: dispatching commands...\n";
 	do{
 		lock.lock();
 		it = _commands.begin();
 		while (_server && it != _commands.end()){
-			if (first)
-				create_slave();
 			if (dispatch_command(*it))
 				it = _commands.erase(it);
-			first = false;
+			else if (!_server->is_creating_slave()){
+				_server->set_creating_slave(true);
+				create_slave();
+			}
 		}
 		lock.unlock();
 	} while (_run || _commands.size() > 0);

@@ -8,6 +8,7 @@
 #include "main/process/master/master.hpp"
 #include "main/process/master/master_ui.hpp"
 #include <dirent.h>
+#include <fstream>
 
 /* Utility functions */
 
@@ -164,6 +165,8 @@ void	master_ui::second_page()
 	sf::Event	event;
 	int	nb_element = _file_list.size();
 	static int	whichOne = 0;
+	std::ifstream	file;
+	std::string	line;
 
 	while (_window.pollEvent(event)){
 		if (event.type == sf::Event::Closed ||
@@ -173,9 +176,15 @@ void	master_ui::second_page()
 			whichOne += (whichOne > nb_element - 2) ? -nb_element + 1 : 1;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			whichOne -= (whichOne < 1) ? -nb_element + 1: 1;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-			_commands.merge(commandParser::parse_line(
-				_file_list.at(whichOne)), compare_commands_ui);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)){
+			std::cout << "master: opening file - " << _file_list.at(whichOne) << std::endl;
+			file.open("files/" + _file_list.at(whichOne));
+			if (!file.is_open())
+				return;
+			while (std::getline(file, line))
+				_commands.merge(commandParser::parse_line(line), compare_commands_ui);
+			file.close();
+		}
 	}
 	draw_second_page(whichOne);
 }
@@ -192,6 +201,7 @@ void	master_ui::third_page()
 	sf::Event	event;
 	static sf::String	entry;
 	static sf::Text	to_display("", _font, 20);
+	std::string	line;
 
 	while (_window.pollEvent(event)){
 		if (event.type == sf::Event::Closed ||
@@ -203,6 +213,8 @@ void	master_ui::third_page()
 				to_display.setString(entry);
 			}
 			else if (event.text.unicode == 13){
+				line = entry.toAnsiString();
+				_commands.merge(commandParser::parse_line(line), compare_commands_ui);
 				entry.clear();
 				to_display.setString(entry);
 			}

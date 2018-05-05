@@ -123,3 +123,13 @@ void	server::add_to_log(command &com)
 	file << "response (" << com.get_file() << ") - " << command::convert_info(com.get_info()) << ": " << com.get_response() << std::endl;
 	file.close();
 }
+
+bool	server::is_creating_slave() const noexcept
+{
+	return (_creating_slave);
+}
+
+void	server::set_creating_slave(bool value)
+{
+	_creating_slave = value;
+}

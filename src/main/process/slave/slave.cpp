@@ -14,7 +14,7 @@
 #include <fstream>
 
 slave::slave(unsigned short port, std::size_t max_thread) : _port(port), _socket(-1), _max(max_thread)
-	, _protocol(getprotobyname("TCP")), _run(true)
+	, _protocol(getprotobyname("TCP")), _run(true), _place(max_thread * 2)
 {
 	std::cout << "slave: process - " << getpid() << std::endl;
 	this->run();
@@ -44,8 +44,10 @@ void	slave::connect_to_server()
 	_client = new client(this, _socket);
 	_client_thread = new std::thread([this](){_client->run();});
 	std::cout << "slave: successfull connected\n";
-	if (_client)
+	if (_client){
+		message_handler::send_packet(*_client, 3, nullptr);
 		message_handler::send_packet(*_client, 2, nullptr);
+	}
 }
 
 void	slave::run()
@@ -62,22 +64,31 @@ void	slave::dispatch_task()
 	std::list<command>::iterator	it;
 	std::thread	*list[_max];
 	std::thread	**src;
+	bool		useless;
 
+	std::cout << "slave: running dispatcher...\n";
+	for (int i = 0;i < _max;i++)
+		list[i] = nullptr;
 	while (utils::get_seconds() - last < 5){
-		if (_commands.size() == 0){
-			message_handler::send_packet(*_client, 2, nullptr);
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			continue;
-		}
+		useless = true;
+		_place = _max * 2 - _commands.size();
 		it = _commands.begin();
 		for (int i = 0;it != _commands.end() && i < _max;i++){
 			if (!list[i]){
+				useless = false;
+				std::cout << "slave: launch command...\n";
+				_place--;
 				src = &list[i];
 				list[i] = new std::thread([it, this, src](){it->run(*_client, src);});
 				it = _commands.erase(it);
 			}
 		}
-		last = utils::get_seconds();
+		if (!useless)
+			last = utils::get_seconds();
+		else{
+			message_handler::send_packet(*_client, 2, nullptr);
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
 	}
 	std::cout << "slave: useless\n";
 }
@@ -101,7 +112,7 @@ void	slave::set_run(bool value)
 
 std::size_t	slave::get_free_place()
 {
-	return (_max);
+	return (_place);
 }
 
 std::list<command>	&slave::get_commands()

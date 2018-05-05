@@ -36,6 +36,9 @@ public:
 	unsigned short	get_port() const noexcept;
 	std::list<command>	&get_responses();
 	void	add_to_log(command &com);
+
+	bool	is_creating_slave() const noexcept;
+	void	set_creating_slave(bool);
 private:
 	void	handle_client();
 
@@ -45,6 +48,7 @@ private:
 	struct sockaddr_in	_config;
 
 	bool		_run;
+	bool		_creating_slave;
 	std::list<command>	_responses;
 	std::map<int, client *>	_clients;
 	std::map<int, std::thread *>	_clients_thread;
