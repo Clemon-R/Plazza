@@ -199,17 +199,17 @@ void	master_ui::third_page()
 			sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			_actual_page = 0;
 		if (event.type == sf::Event::TextEntered){
+			std::cout << event.text.unicode << std::endl;
 			if (event.text.unicode > 31 && event.text.unicode < 128){
 				entry += event.text.unicode;
-				std::cout << entry.toAnsiString() << std::endl;
-			}
-			else if (event.text.unicode == 13){
-				std::cout << entry.toAnsiString() << std::endl;
 				to_display.setFont(_font);
 				to_display.setCharacterSize(20);
 				to_display.setString(entry);
 				my_set_position(&to_display, 0);
+			}
+			else if (event.text.unicode == 13){
 				entry.clear();
+				to_display.setString(entry);
 			}
 		}
 	}
