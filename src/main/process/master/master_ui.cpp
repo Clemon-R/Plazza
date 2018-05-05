@@ -189,30 +189,30 @@ void	master_ui::draw_third_page()
 
 void	master_ui::third_page()
 {
-	std::size_t	size = 0;
 	sf::Event	event;
 	static sf::String	entry;
-	static sf::Text	to_display;
+	static sf::Text	to_display("", _font, 20);
 
 	while (_window.pollEvent(event)){
 		if (event.type == sf::Event::Closed ||
 			sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			_actual_page = 0;
 		if (event.type == sf::Event::TextEntered){
-			std::cout << event.text.unicode << std::endl;
 			if (event.text.unicode > 31 && event.text.unicode < 128){
 				entry += event.text.unicode;
-				to_display.setFont(_font);
-				to_display.setCharacterSize(20);
 				to_display.setString(entry);
-				my_set_position(&to_display, 0);
 			}
 			else if (event.text.unicode == 13){
 				entry.clear();
 				to_display.setString(entry);
 			}
+			else if (event.text.unicode && entry.getSize() > 0){
+				entry.erase(entry.getSize() - 1, 1);
+				to_display.setString(entry);
+			}
 		}
 	}
+	my_set_position(&to_display, 0);
 	_window.draw(to_display);
 }
 
