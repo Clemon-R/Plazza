@@ -79,7 +79,8 @@ void	server::run()
 	}
 	if (_clients.size() > 0){
 		std::cout << "server: some client still running...\n";
-		while (_clients.size() > 0);
+		while (_clients.size() > 0)
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	std::cout << "server: all thing terminated\n";
 }

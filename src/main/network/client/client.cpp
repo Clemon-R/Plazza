@@ -37,7 +37,7 @@ void	client::run()
 	action.events = POLLIN;
 	action.revents = 0;
 	while (_run){
-		while (poll(&action, 1, 0) == 0&& _run);
+		while (poll(&action, 1, 0) == 0 && _run);
 		std::cout << "client: action\n";
 		reception_packet();
 	}
