@@ -6,7 +6,7 @@
 */
 
 #include <criterion/criterion.h>
-#include "master.hpp"
+#include "main/master/master.hpp"
 
 Test(master, init)
 {
